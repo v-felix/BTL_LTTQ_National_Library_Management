@@ -1,0 +1,22 @@
+# Visual Studio and build output
+.vs/
+[Bb]in/
+[Oo]bj/
+packages/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+publish/
+
+# Local databases, backups and generated reports
+*.mdf
+*.ldf
+*.bak
+Backups/
+Reports/
+Tests/Work/
+*.log
+~$*
+*.tmp
+Báo cáo Danh sách Sách.pdf
