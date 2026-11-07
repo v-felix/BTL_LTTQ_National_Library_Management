@@ -101,6 +101,19 @@ namespace QuanLyThuVienQuocGia
             {var a=LibraryDb.Query("SELECT ISNULL(h.TamUng,0)-ISNULL((SELECT SUM(r.TamUngApDung) FROM tblHoSoTra r WHERE r.MaHSM=h.MaHSM),0) A FROM tblHoSoMuon h WHERE h.MaHSM=@h",LibraryDb.P("@h",LibraryUi.Selected(cardOrLoan,"hồ sơ")));if(a.Rows.Count>0)advance=Convert.ToDecimal(a.Rows[0][0]);}
             summary.Text=invalid?"Cần kiểm tra ngày trả, đơn giá hoặc tiền phạt trước khi lưu.":string.Format("Đã chọn {0}/{1} sách chưa trả • Tổng tiền: {2:N0} đ • Trừ tạm ứng: {3:N0} đ\n{4}: {5:N0} đ",chosen.Length,grid.Rows.Count,total,advance,total-advance<0?"Hoàn lại bạn đọc":"Phải thu thêm",Math.Abs(total-advance));
         }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // frmCirculation
+            // 
+            this.ClientSize = new System.Drawing.Size(536, 405);
+            this.Name = "frmCirculation";
+            this.ResumeLayout(false);
+
+        }
+
         void Save()
         {
             int staff=LibraryUi.Selected(librarian,"thủ thư"),owner=LibraryUi.Selected(cardOrLoan,returning?"hồ sơ mượn":"thẻ mượn");var chosen=Chosen();

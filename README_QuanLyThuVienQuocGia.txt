@@ -14,7 +14,7 @@ Tài liệu “YÊU CẦU FORM HÓA ĐƠN” không được dùng làm yêu c�
 - Build Debug hoặc Release, nền tảng x64, .NET Framework 4.7.2.
 - Máy cần SQL Server LocalDB instance MSSQLLocalDB, .NET Framework 4.7.2,
   Crystal Reports runtime x64 để dùng báo cáo danh sách sách cũ.
-- Giữ các NuGet package hiện có trong packages (EPPlus và các dependency).
+- Giữ các NuGet package hiện có trong packages (các dependency của dự án).
 - Chạy bin\Debug\QuanLyThuVienQuocGia.exe hoặc bản trong bin\Release.
 - Khi chạy trong cây thư mục dự án, cả Debug và Release cùng dùng
   Database\DuLieu.mdf. Không dùng bản cũ trong bin\Debug\Database nữa.
@@ -105,7 +105,10 @@ Các báo cáo khác:
 - Báo cáo danh sách sách Crystal Reports cũ vẫn được giữ.
 
 Các bảng báo cáo hỗ trợ Xuất Excel và In/PDF. Chọn máy in PDF trong hộp in
-để lưu PDF. Excel giữ ngày và tiền ở dạng dữ liệu có kiểu.
+để lưu PDF. Xuất Excel dùng Microsoft.Office.Interop.Excel theo bài Tuần 7;
+máy phải cài Microsoft Excel desktop. File có thông tin đầu trang màu xanh,
+tiêu đề đỏ căn giữa, font Times New Roman, cột STT, giữ đúng kiểu ngày và tiền.
+Workbook được Activate, SaveAs rồi Close; Application.Quit luôn chạy sau khi xuất.
 
 8. SAO LƯU VÀ PHỤC HỒI
 
@@ -126,7 +129,8 @@ Catalog.cs               Định nghĩa các danh mục, kiểm tra dữ liệu 
 frmCatalog.cs            Form danh mục dùng chung, tìm kiếm, xuất Excel.
 frmCirculation.cs        Lập hồ sơ mượn, trả từng phần, xem trước tiền.
 frmReports.cs            Truy vấn và tổng hợp báo cáo, chi tiết hồ sơ.
-LibraryUi.cs             Giao diện dùng chung, xuất Excel, xem trước/in.
+LibraryUi.cs             Giao diện dùng chung, hộp thoại xuất, xem trước/in.
+ExcelExport.cs           Xuất Excel bằng Office Interop, định dạng theo Tuần 7.
 DatabaseMaintenance.cs   Sao lưu, kiểm tra và phục hồi CSDL.
 ProcessDataBase.cs       Đường dẫn CSDL chung và lớp truy cập cũ.
 frmMain.cs               Kết nối menu đến các chức năng đã hoàn thiện.

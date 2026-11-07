@@ -19,8 +19,8 @@ Bài tập lớn Lập trình trực quan, xây dựng bằng **C# Windows Forms
 - .NET Framework **4.7.2 Developer Pack**.
 - SQL Server Express **LocalDB**, instance `MSSQLLocalDB`; công cụ `SqlLocalDB` có trong `PATH`.
 - SAP Crystal Reports for Visual Studio và runtime **x64** tương thích các assembly `13.0.4000.0` của dự án.
-- Reference Microsoft Office Interop Excel 15.0 theo cấu hình dự án hiện tại.
-- Các package trong `packages.config`, bao gồm EPPlus. Dự án dùng cấu hình EPPlus cho bài tập cá nhân phi thương mại.
+- Microsoft Excel bản desktop cài trên máy và reference Microsoft Office Interop Excel 15.0.
+- Restore các package còn lại trong `packages.config`.
 
 ## Clone và chạy
 
@@ -47,7 +47,19 @@ cd BTL_LTTQ_National_Library_Management
 
 4. Chạy **Debug / AnyCPU** (dự án đã đặt `PlatformTarget=x64`) bằng F5, hoặc mở `bin\Debug\QuanLyThuVienQuocGia.exe`.
 
+### Dữ liệu mẫu 30 đầu sách
+
+Sau khi tạo CSDL, mở `Database/SeedBooks.sql` trong SQL Server Object Explorer hoặc SQL Server Management Studio và chạy trên CSDL `DuLieu` vừa tạo. Script bổ sung 30 đầu sách thuộc 17 thể loại, 4 ngôn ngữ, có đầy đủ thông tin và tồn kho để thử mượn/trả, tìm kiếm và xuất Excel. Chạy lại không tạo trùng tên sách và tác giả, đồng thời giữ nguyên sách đã có.
+
+Năm xuất bản, NXB, số trang, giá, tồn kho và đơn giá thuê trong bộ mẫu là dữ liệu mô phỏng phục vụ bài tập, không phải thông tin xác thực của từng ấn bản.
+
 Ứng dụng tự khởi động LocalDB và nâng cấp schema khi cần. Debug và Release cùng dùng `Database\DuLieu.mdf` ở thư mục dự án. Tệp CSDL đang sử dụng, thông tin bạn đọc, bản sao lưu và kết quả chạy thử **không được đưa vào Git**.
+
+## Xuất Excel theo bài giảng Tuần 7
+
+Các nút Xuất Excel dùng `Microsoft.Office.Interop.Excel`: tạo `Application`, `Workbook`, `Worksheet`, thao tác `Range`, gọi `Activate`, `SaveAs`, đóng workbook và `Quit` trong `finally`.
+
+File có thông tin đầu trang màu xanh, tiêu đề báo cáo màu đỏ căn giữa ở dòng 5, font Times New Roman, dòng tiêu đề bảng ở dòng 7 và cột STT. Ngày/tiền giữ giá trị số; tên sách bắt đầu bằng dấu `=` vẫn là văn bản. Hộp thoại lưu cho phép chọn nơi lưu `.xlsx`. Excel được tạo trong instance riêng và tự đóng sau khi lưu.
 
 ## Quy tắc tính tiền
 
@@ -65,6 +77,8 @@ Sau khi tạo CSDL và cài các dependency:
 ```
 
 Nếu không truyền `-MSBuildPath`, script dùng đường dẫn Visual Studio 18 Insiders của máy phát triển ban đầu. Bộ kiểm thử tạo bản sao CSDL riêng và instance LocalDB riêng cho kiểm tra khởi động; không thêm dữ liệu thử vào CSDL đang dùng. Kết quả được ghi trong `Tests/Work/` (được Git bỏ qua).
+
+Để kiểm tra riêng phần xuất Excel mà không cần CSDL, chạy `.\Tests\RunExcelTests.ps1` (cũng hỗ trợ tham số `-MSBuildPath`). Cần Microsoft Excel desktop. Kết quả và file xuất thử nằm trong `Tests/Work/`.
 
 ## Mã nguồn
 

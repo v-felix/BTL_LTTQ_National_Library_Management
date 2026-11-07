@@ -64,7 +64,8 @@ class UiSmokeTests
             using(var zip=ZipFile.OpenRead(exportPath))using(var stream=zip.GetEntry("xl/worksheets/sheet1.xml").Open())
             {
                 var xml=new XmlDocument();xml.Load(stream);var ns=new XmlNamespaceManager(xml.NameTable);ns.AddNamespace("s",xml.DocumentElement.NamespaceURI);
-                Pass(xml.SelectSingleNode("//s:c[@r='A2']/s:v",ns)!=null && xml.SelectSingleNode("//s:c[@r='B2']/s:v",ns).InnerText=="12500.5" && xml.SelectNodes("//s:f",ns).Count==0,"Excel export preserves typed dates/numbers and literal book names");
+                Pass(xml.SelectSingleNode("//s:c[@r='B8']/s:v",ns)!=null && xml.SelectSingleNode("//s:c[@r='C8']/s:v",ns).InnerText=="12500.5" && xml.SelectNodes("//s:f",ns).Count==0,"Interop Excel export preserves typed dates/numbers and literal book names");
+                Pass(xml.SelectSingleNode("//s:mergeCell[@ref='A5:D5']",ns)!=null && xml.SelectSingleNode("//s:c[@r='A8']/s:v",ns).InnerText=="1","Teacher layout contains merged report title and STT column");
             }
             Console.WriteLine("ALL "+count+" UI/REPORT CHECKS PASSED");return 0;
         }

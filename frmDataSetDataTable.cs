@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using OfficeOpenXml;
+
 using System.IO;
 
 namespace QuanLyThuVienQuocGia
@@ -153,51 +153,7 @@ namespace QuanLyThuVienQuocGia
 
         private void btnXuatExcel_Click(object sender, EventArgs e)
         {
-            if (dt == null || dt.Rows.Count == 0)
-            {
-                MessageBox.Show("Không có dữ liệu để xuất!");
-                return;
-            }
-
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "Excel Files|*.xlsx";
-            saveFileDialog.Title = "Lưu dữ liệu Excel";
-            saveFileDialog.FileName = "DanhSachSach.xlsx";
-
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                ExcelPackage.License.SetNonCommercialPersonal("Phan Huy Vinh");
-
-                using (ExcelPackage package = new ExcelPackage())
-                {
-                    ExcelWorksheet worksheet =
-                        package.Workbook.Worksheets.Add("Danh sách sách");
-
-                    for (int i = 0; i < dt.Columns.Count; i++)
-                    {
-                        worksheet.Cells[1, i + 1].Value =
-                            dt.Columns[i].ColumnName;
-                    }
-
-                    for (int i = 0; i < dt.Rows.Count; i++)
-                    {
-                        for (int j = 0; j < dt.Columns.Count; j++)
-                        {
-                            worksheet.Cells[i + 2, j + 1].Value =
-                                dt.Rows[i][j];
-                        }
-                    }
-
-                    worksheet.Cells.AutoFitColumns();
-
-                    FileInfo fileInfo =
-                        new FileInfo(saveFileDialog.FileName);
-
-                    package.SaveAs(fileInfo);
-                }
-
-                MessageBox.Show("Xuất dữ liệu ra Excel thành công!");
-            }
+            LibraryUi.Run(() => LibraryUi.Export(dgvDuLieu, "Danh sách sách"));
         }
     }
 }

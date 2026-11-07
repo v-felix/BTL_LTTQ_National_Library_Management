@@ -8,6 +8,7 @@ namespace QuanLyThuVienQuocGia
         public frmHuongDan(){InitializeComponent();btnDong.CausesValidation=false;UiTheme.Apply(this);}
         private void frmHuongDan_Load(object sender,EventArgs e){wbNoiDung.DocumentText=SinhNoiDungHtml();}
         private void btnDong_Click(object sender,EventArgs e){Close();}
+        private void lblTieuDe_Click(object sender,EventArgs e) { }
         private void btnIn_Click(object sender,EventArgs e){LibraryUi.Run(()=>wbNoiDung.ShowPrintPreviewDialog());}
         private string SinhNoiDungHtml()
         {
@@ -30,7 +31,7 @@ namespace QuanLyThuVienQuocGia
 <h2>5. Tìm kiếm và báo cáo</h2><ul><li>Quản lý sách/Tra cứu dữ liệu: tìm theo tên sách, thể loại hoặc nhà xuất bản.</li>
 <li>Báo cáo tiền thu: chọn khoảng ngày trả, xem Chi tiết hoặc Tổng hợp tháng/quý/năm. Tổng tiền thuê và phạt được trình bày riêng với thu thêm/hoàn sau tạm ứng; không cộng ba cấp tổng hợp với nhau.</li>
 <li>Báo cáo sách chưa trả, hồ sơ mượn theo thẻ/thủ thư, hồ sơ trả và vi phạm: lọc theo thẻ, thủ thư; có thể bật lọc ngày.</li>
-<li>Nhấp đúp hồ sơ để xem sách chi tiết. Xuất Excel hoặc nhấn In/PDF và chọn máy in PDF khi cần.</li></ul>
+<li>Nhấp đúp hồ sơ để xem sách chi tiết. Xuất Excel (cần cài Microsoft Excel desktop) hoặc nhấn In/PDF và chọn máy in PDF khi cần. File Excel theo mẫu bài Tuần 7: thông tin đầu trang, tiêu đề đỏ căn giữa, font Times New Roman và cột STT.</li></ul>
 <h2>6. Sao lưu và dữ liệu</h2><p>Hệ thống hỗ trợ sao lưu .bak và phục hồi. Trước khi phục hồi, chương trình kiểm tra bản sao trên CSDL tạm và tự sao lưu dữ liệu đang dùng.</p>
 <p>Khi chạy từ dự án, Debug và Release cùng dùng <code>Database\DuLieu.mdf</code>. Không sao chép đè MDF đang chạy; dùng chức năng sao lưu/phục hồi.</p>
 <p>Đề Excel không yêu cầu đăng nhập. Các menu tài khoản chưa triển khai được ẩn để chỉ hiển thị chức năng sử dụng được.</p>

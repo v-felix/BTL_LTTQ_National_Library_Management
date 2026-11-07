@@ -35,6 +35,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'UI test compilation failed.' }
     & $smokeExe (Join-Path $projectRoot 'bin\Debug\QuanLyThuVienQuocGia.exe') | Tee-Object -FilePath (Join-Path $work 'UiResults.txt')
     if ($LASTEXITCODE -ne 0) { throw 'UI/report smoke tests failed.' }
+    & (Join-Path $PSScriptRoot 'RunExcelTests.ps1') -MSBuildPath $MSBuildPath
     $startupExe = Join-Path $work 'LocalDbStartupTests.exe'
     & $compiler /nologo /target:exe "/out:$startupExe" /r:System.Data.dll /r:System.Core.dll (Join-Path $PSScriptRoot 'LocalDbStartupTests.cs') (Join-Path $projectRoot 'LocalDbStartup.cs')
     if ($LASTEXITCODE -ne 0) { throw 'Startup test compilation failed.' }

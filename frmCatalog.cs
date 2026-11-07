@@ -59,9 +59,15 @@ namespace QuanLyThuVienQuocGia
                 {if(f.Reference!=null){grid.Columns[f.Name].Visible=false;grid.Columns[f.Name+"Text"].HeaderText=f.Label;}else grid.Columns[f.Name].HeaderText=f.Label;}
                 LibraryUi.Format(grid);status.Text=grid.Rows.Count+" bản ghi • "+spec.Title;grid.ClearSelection();selected=null;
             }finally{binding=false;}
-            NewRecord();
+            ResetEditor();
         }
         void NewRecord()
+        {
+            ResetEditor();
+            editors[spec.Fields[0].Name].Focus();
+        }
+        // Refreshing search results must not move the caret out of the search box.
+        void ResetEditor()
         {
             selected=null;originalStock=null;grid.ClearSelection();code.Text="Mã: tự động khi lưu";
             foreach(var f in spec.Fields)
@@ -71,7 +77,6 @@ namespace QuanLyThuVienQuocGia
                 else if(c is DateTimePicker){var d=(DateTimePicker)c;d.Value=f.Name=="NgayHetHan"?DateTime.Today.AddYears(1):DateTime.Today;d.Checked=f.Required;}
                 else c.Text=f.ReadOnly || f.Name=="SoLuong" || f.Kind=="money" ? "0" : "";
             }
-            editors[spec.Fields[0].Name].Focus();
         }
         void SelectRecord()
         {

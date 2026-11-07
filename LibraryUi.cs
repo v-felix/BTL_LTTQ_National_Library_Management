@@ -6,7 +6,6 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Windows.Forms;
-using OfficeOpenXml;
 
 namespace QuanLyThuVienQuocGia
 {
@@ -53,7 +52,7 @@ namespace QuanLyThuVienQuocGia
         public static DataTable DisplayTable(DataGridView g)
         {
             var dt=new DataTable();foreach(DataGridViewColumn c in g.Columns) if(c.Visible) dt.Columns.Add(c.HeaderText,c.ValueType??typeof(string));
-            foreach(DataGridViewRow r in g.Rows) { var row=dt.NewRow();int i=0;foreach(DataGridViewColumn c in g.Columns) if(c.Visible) row[i++]=r.Cells[c.Index].Value??DBNull.Value;dt.Rows.Add(row); }return dt;
+            foreach(DataGridViewRow r in g.Rows) { if(r.IsNewRow)continue;var row=dt.NewRow();int i=0;foreach(DataGridViewColumn c in g.Columns) if(c.Visible) row[i++]=r.Cells[c.Index].Value??DBNull.Value;dt.Rows.Add(row); }return dt;
         }
         public static void Export(DataGridView g,string title)
         {
@@ -61,19 +60,13 @@ namespace QuanLyThuVienQuocGia
             using(var dlg=new SaveFileDialog{Filter="Excel (*.xlsx)|*.xlsx",FileName=title+".xlsx"})
             {
                 if(dlg.ShowDialog()!=DialogResult.OK)return;
-                WriteExcel(dt,dlg.FileName);
+                ExcelExport.Write(dt,dlg.FileName,title);
                 MessageBox.Show("Đã xuất dữ liệu.","Xuất Excel");
             }
         }
         internal static void WriteExcel(DataTable dt,string path)
         {
-            ExcelPackage.License.SetNonCommercialPersonal("Phan Huy Vinh");
-            using(var p=new ExcelPackage())
-            {
-                var w=p.Workbook.Worksheets.Add("DuLieu");w.Cells[1,1].LoadFromDataTable(dt,true);w.Cells[1,1,1,dt.Columns.Count].Style.Font.Bold=true;
-                for(int c=0;c<dt.Columns.Count;c++) { if(dt.Columns[c].DataType==typeof(DateTime))w.Column(c+1).Style.Numberformat.Format="dd/mm/yyyy";if(dt.Columns[c].DataType==typeof(decimal))w.Column(c+1).Style.Numberformat.Format="#,##0.00"; }
-                w.Cells[w.Dimension.Address].AutoFitColumns(12,55);w.View.FreezePanes(2,1);w.Cells[w.Dimension.Address].AutoFilter=true;p.SaveAs(new FileInfo(path));
-            }
+            ExcelExport.Write(dt,path,"Danh sách dữ liệu");
         }
         public static void Print(DataGridView g,string title,string summary)
         {

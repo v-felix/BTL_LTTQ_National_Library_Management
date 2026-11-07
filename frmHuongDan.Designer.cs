@@ -16,8 +16,8 @@ namespace QuanLyThuVienQuocGia
         private void InitializeComponent()
         {
             this.pnlTop = new System.Windows.Forms.Panel();
-            this.lblTieuDe = new System.Windows.Forms.Label();
             this.lblPhuDe = new System.Windows.Forms.Label();
+            this.lblTieuDe = new System.Windows.Forms.Label();
             this.pnlBottom = new System.Windows.Forms.Panel();
             this.btnIn = new System.Windows.Forms.Button();
             this.btnDong = new System.Windows.Forms.Button();
@@ -33,31 +33,33 @@ namespace QuanLyThuVienQuocGia
             this.pnlTop.Controls.Add(this.lblTieuDe);
             this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
+            this.pnlTop.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(1020, 80);
+            this.pnlTop.Size = new System.Drawing.Size(1148, 100);
             this.pnlTop.TabIndex = 0;
-            // 
-            // lblTieuDe
-            // 
-            this.lblTieuDe.AutoSize = true;
-            this.lblTieuDe.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this.lblTieuDe.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
-            this.lblTieuDe.Location = new System.Drawing.Point(24, 12);
-            this.lblTieuDe.Name = "lblTieuDe";
-            this.lblTieuDe.Size = new System.Drawing.Size(434, 37);
-            this.lblTieuDe.TabIndex = 0;
-            this.lblTieuDe.Text = "SỔ TAY HƯỚNG DẪN SỬ DỤNG";
             // 
             // lblPhuDe
             // 
             this.lblPhuDe.AutoSize = true;
             this.lblPhuDe.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblPhuDe.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(105)))), ((int)(((byte)(120)))));
-            this.lblPhuDe.Location = new System.Drawing.Point(26, 48);
+            this.lblPhuDe.Location = new System.Drawing.Point(29, 60);
             this.lblPhuDe.Name = "lblPhuDe";
-            this.lblPhuDe.Size = new System.Drawing.Size(534, 23);
+            this.lblPhuDe.Size = new System.Drawing.Size(638, 28);
             this.lblPhuDe.TabIndex = 1;
             this.lblPhuDe.Text = "Hệ thống Quản lý Thư viện Quốc gia - Hướng dẫn chi tiết các chức năng";
+            // 
+            // lblTieuDe
+            // 
+            this.lblTieuDe.AutoSize = true;
+            this.lblTieuDe.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+            this.lblTieuDe.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(51)))), ((int)(((byte)(102)))));
+            this.lblTieuDe.Location = new System.Drawing.Point(27, 15);
+            this.lblTieuDe.Name = "lblTieuDe";
+            this.lblTieuDe.Size = new System.Drawing.Size(497, 45);
+            this.lblTieuDe.TabIndex = 0;
+            this.lblTieuDe.Text = "SỔ TAY HƯỚNG DẪN SỬ DỤNG";
+            this.lblTieuDe.Click += new System.EventHandler(this.lblTieuDe_Click);
             // 
             // pnlBottom
             // 
@@ -65,17 +67,19 @@ namespace QuanLyThuVienQuocGia
             this.pnlBottom.Controls.Add(this.btnIn);
             this.pnlBottom.Controls.Add(this.btnDong);
             this.pnlBottom.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlBottom.Location = new System.Drawing.Point(0, 650);
+            this.pnlBottom.Location = new System.Drawing.Point(0, 813);
+            this.pnlBottom.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.pnlBottom.Name = "pnlBottom";
-            this.pnlBottom.Size = new System.Drawing.Size(1020, 65);
+            this.pnlBottom.Size = new System.Drawing.Size(1148, 81);
             this.pnlBottom.TabIndex = 2;
             // 
             // btnIn
             // 
             this.btnIn.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
-            this.btnIn.Location = new System.Drawing.Point(24, 12);
+            this.btnIn.Location = new System.Drawing.Point(27, 15);
+            this.btnIn.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnIn.Name = "btnIn";
-            this.btnIn.Size = new System.Drawing.Size(160, 42);
+            this.btnIn.Size = new System.Drawing.Size(180, 52);
             this.btnIn.TabIndex = 0;
             this.btnIn.Text = "IN HƯỚNG DẪN";
             this.btnIn.UseVisualStyleBackColor = true;
@@ -85,9 +89,10 @@ namespace QuanLyThuVienQuocGia
             // 
             this.btnDong.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDong.Font = new System.Drawing.Font("Segoe UI", 10.5F, System.Drawing.FontStyle.Bold);
-            this.btnDong.Location = new System.Drawing.Point(870, 12);
+            this.btnDong.Location = new System.Drawing.Point(979, 15);
+            this.btnDong.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btnDong.Name = "btnDong";
-            this.btnDong.Size = new System.Drawing.Size(126, 42);
+            this.btnDong.Size = new System.Drawing.Size(142, 52);
             this.btnDong.TabIndex = 1;
             this.btnDong.Text = "ĐÓNG";
             this.btnDong.UseVisualStyleBackColor = true;
@@ -96,21 +101,23 @@ namespace QuanLyThuVienQuocGia
             // wbNoiDung
             // 
             this.wbNoiDung.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wbNoiDung.Location = new System.Drawing.Point(0, 80);
-            this.wbNoiDung.MinimumSize = new System.Drawing.Size(20, 20);
+            this.wbNoiDung.Location = new System.Drawing.Point(0, 100);
+            this.wbNoiDung.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.wbNoiDung.MinimumSize = new System.Drawing.Size(22, 25);
             this.wbNoiDung.Name = "wbNoiDung";
-            this.wbNoiDung.Size = new System.Drawing.Size(1020, 570);
+            this.wbNoiDung.Size = new System.Drawing.Size(1148, 713);
             this.wbNoiDung.TabIndex = 1;
             // 
             // frmHuongDan
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1020, 715);
+            this.ClientSize = new System.Drawing.Size(1148, 894);
             this.Controls.Add(this.wbNoiDung);
             this.Controls.Add(this.pnlBottom);
             this.Controls.Add(this.pnlTop);
-            this.MinimumSize = new System.Drawing.Size(800, 600);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.MinimumSize = new System.Drawing.Size(897, 736);
             this.Name = "frmHuongDan";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "HƯỚNG DẪN SỬ DỤNG - QUẢN LÝ THƯ VIỆN QUỐC GIA";
@@ -119,6 +126,7 @@ namespace QuanLyThuVienQuocGia
             this.pnlTop.PerformLayout();
             this.pnlBottom.ResumeLayout(false);
             this.ResumeLayout(false);
+
         }
 
         private System.Windows.Forms.Panel pnlTop;
