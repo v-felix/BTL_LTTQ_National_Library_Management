@@ -25,6 +25,7 @@ class DesignerFormsTests
             foreach(string name in new[]{"frmCatalog","frmDMSach","frmCirculation","frmReports","frmMain"})
             {
                 var type=app.GetType("QuanLyThuVienQuocGia."+name);
+                Check(type.BaseType==typeof(Form),"Form has no compiled custom base dependency: "+name);
                 using(var surface=new DesignSurface(type))
                 {
                     Check(surface.LoadErrors.Count==0,"design surface opens without database: "+name);

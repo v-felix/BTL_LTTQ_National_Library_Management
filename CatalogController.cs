@@ -8,11 +8,12 @@ using System.Windows.Forms;
 
 namespace QuanLyThuVienQuocGia
 {
-    public class CatalogFormBase : Form
+    internal sealed class CatalogController
     {
         CatalogSpec spec;
-        protected readonly Dictionary<string,Control> editors=new Dictionary<string,Control>();
-        protected int? selected;
+        readonly Form owner;
+        internal readonly Dictionary<string,Control> editors=new Dictionary<string,Control>();
+        internal int? selected;
         int? originalStock; bool binding;
 
         DataGridView grid;
@@ -22,16 +23,17 @@ namespace QuanLyThuVienQuocGia
         Label note,status,code;
         Button btnStaffLoans;
 
-        // This base form contains behavior only. Each concrete form owns its
-        // Designer controls, so TableLayoutPanel and buttons stay editable.
-        protected void ConfigureCatalog(string key)
+        // Keep shared behavior outside the Form inheritance chain. A clean
+        // checkout can open the layout without a compiled application assembly.
+        internal CatalogController(Form form,string key)
         {
+            owner=form;
             grid=Find<DataGridView>("grid");search=Find<TextBox>("search");
             fields=Find<TableLayoutPanel>("fields");editorPanel=Find<Panel>("editorPanel");
             note=Find<Label>("note");status=Find<Label>("status");code=Find<Label>("code");
             btnStaffLoans=Find<Button>("btnStaffLoans");
             spec=Catalog.Specs[key];
-            Text=spec.Title;
+            owner.Text=spec.Title;
             btnStaffLoans.Visible=key=="thuthu";
             if(key=="sach")
             {
@@ -49,8 +51,8 @@ namespace QuanLyThuVienQuocGia
         }
 
         T Find<T>(string name) where T:Control
-        {return (T)Controls.Find(name,true).Single();}
-        protected void BuildFields()
+        {return (T)owner.Controls.Find(name,true).Single();}
+        internal void BuildFields()
         {
             fields.SuspendLayout();
             try
@@ -75,27 +77,27 @@ namespace QuanLyThuVienQuocGia
             }
             finally{fields.ResumeLayout(true);}
         }
-        protected void HandleCatalog_Shown(object sender,EventArgs e)
+        internal void HandleCatalog_Shown(object sender,EventArgs e)
         { if(!IsDesigner)LibraryUi.Run(()=>{LoadLookups();LoadRows();NewRecord();}); }
-        bool IsDesigner {get{return System.ComponentModel.LicenseManager.UsageMode==System.ComponentModel.LicenseUsageMode.Designtime || DesignMode;}}
-        protected void HandleSearch_Click(object sender,EventArgs e){LibraryUi.Run(LoadRows);}
-        protected void HandleExport_Click(object sender,EventArgs e){LibraryUi.Run(()=>LibraryUi.Export(grid,spec.Title));}
-        protected void HandleStaffLoans_Click(object sender,EventArgs e)
-        { LibraryUi.Run(()=>{if(!selected.HasValue)throw new InvalidOperationException("Chọn thủ thư trước.");using(var f=new frmReports("loans",null,selected))f.ShowDialog(this);}); }
-        protected void HandleNew_Click(object sender,EventArgs e){LibraryUi.Run(NewRecord);}
-        protected void HandleSave_Click(object sender,EventArgs e){LibraryUi.Run(Save);}
-        protected void HandleDelete_Click(object sender,EventArgs e){LibraryUi.Run(Delete);}
-        protected void HandleRefresh_Click(object sender,EventArgs e){LibraryUi.Run(()=>{LoadLookups();LoadRows();NewRecord();});}
-        protected void HandleGrid_SelectionChanged(object sender,EventArgs e){SelectRecord();}
-        protected void HandleSearch_TextChanged(object sender,EventArgs e){if(!IsDesigner)LibraryUi.Run(LoadRows);}
-        protected void LoadLookups()
+        bool IsDesigner {get{return System.ComponentModel.LicenseManager.UsageMode==System.ComponentModel.LicenseUsageMode.Designtime || (owner.Site!=null && owner.Site.DesignMode);}}
+        internal void HandleSearch_Click(object sender,EventArgs e){LibraryUi.Run(LoadRows);}
+        internal void HandleExport_Click(object sender,EventArgs e){LibraryUi.Run(()=>LibraryUi.Export(grid,spec.Title));}
+        internal void HandleStaffLoans_Click(object sender,EventArgs e)
+        { LibraryUi.Run(()=>{if(!selected.HasValue)throw new InvalidOperationException("Chọn thủ thư trước.");using(var f=new frmReports("loans",null,selected))f.ShowDialog(owner);}); }
+        internal void HandleNew_Click(object sender,EventArgs e){LibraryUi.Run(NewRecord);}
+        internal void HandleSave_Click(object sender,EventArgs e){LibraryUi.Run(Save);}
+        internal void HandleDelete_Click(object sender,EventArgs e){LibraryUi.Run(Delete);}
+        internal void HandleRefresh_Click(object sender,EventArgs e){LibraryUi.Run(()=>{LoadLookups();LoadRows();NewRecord();});}
+        internal void HandleGrid_SelectionChanged(object sender,EventArgs e){SelectRecord();}
+        internal void HandleSearch_TextChanged(object sender,EventArgs e){if(!IsDesigner)LibraryUi.Run(LoadRows);}
+        internal void LoadLookups()
         {
             foreach(var f in spec.Fields.Where(x=>x.Reference!=null))
             {
                 var cb=(ComboBox)editors[f.Name];var dt=Catalog.Lookup(f.Reference);var blank=dt.NewRow();blank["Id"]=DBNull.Value;blank["Name"]="— Không chọn —";dt.Rows.InsertAt(blank,0);cb.DataSource=dt;
             }
         }
-        protected void LoadRows()
+        internal void LoadRows()
         {
             binding=true;try{
                 if(grid.DataSource==null)grid.Columns.Clear();
@@ -107,13 +109,13 @@ namespace QuanLyThuVienQuocGia
             }finally{binding=false;}
             ResetEditor();
         }
-        protected void NewRecord()
+        internal void NewRecord()
         {
             ResetEditor();
             editors[spec.Fields[0].Name].Focus();
         }
         // Refreshing search results must not move the caret out of the search box.
-        protected void ResetEditor()
+        internal void ResetEditor()
         {
             selected=null;originalStock=null;grid.ClearSelection();code.Text="Đang thêm mới • Mã tự động khi lưu";
             foreach(var f in spec.Fields)
@@ -124,7 +126,7 @@ namespace QuanLyThuVienQuocGia
                 else c.Text=f.ReadOnly || f.Name=="SoLuong" || f.Kind=="money" ? "0" : "";
             }
         }
-        protected void SelectRecord()
+        internal void SelectRecord()
         {
             if(binding || grid.SelectedRows.Count==0)return;
             var row=((DataRowView)grid.SelectedRows[0].DataBoundItem).Row;selected=Convert.ToInt32(row[spec.Key]);code.Text="Mã: "+selected;
@@ -137,7 +139,7 @@ namespace QuanLyThuVienQuocGia
                 else c.Text=v==DBNull.Value?"":Convert.ToString(v,CultureInfo.CurrentCulture);
             }
         }
-        protected void Save()
+        internal void Save()
         {
             var values=new Dictionary<string,object>();
             foreach(var f in spec.Fields.Where(x=>!x.ReadOnly))
@@ -167,7 +169,7 @@ namespace QuanLyThuVienQuocGia
             }
             status.Text=(adding?"Đã thêm mới":"Đã cập nhật")+" bản ghi mã "+id+". "+grid.Rows.Count+" bản ghi.";
         }
-        protected void Delete()
+        internal void Delete()
         {
             if(!selected.HasValue)throw new InvalidOperationException("Chọn bản ghi cần xóa.");
             if(MessageBox.Show("Xóa bản ghi mã "+selected+"?",spec.Title,MessageBoxButtons.YesNo,MessageBoxIcon.Question)!=DialogResult.Yes)return;

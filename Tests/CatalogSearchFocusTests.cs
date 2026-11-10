@@ -1,4 +1,4 @@
-// UI regression test: compile with CatalogFormBase.cs, frmCatalog.cs and its Designer.
+﻿// UI regression test: compile with CatalogController.cs, frmCatalog.cs and its Designer.
 // The in-memory catalog
 // replaces SQL so typing/focus can be tested even when LocalDB is unavailable.
 using System;
@@ -20,7 +20,8 @@ class CatalogSearchFocusTests
                 form.ShowInTaskbar=false;form.Opacity=0;form.Show();Application.DoEvents();
                 var flags=BindingFlags.Instance|BindingFlags.NonPublic;
                 var search=(TextBox)form.GetType().GetField("search",flags).GetValue(form);
-                var editors=(Dictionary<string,Control>)form.GetType().GetField("editors",flags).GetValue(form);
+                var controller=form.GetType().GetField("controller",flags).GetValue(form);
+                var editors=(Dictionary<string,Control>)controller.GetType().GetField("editors",flags).GetValue(controller);
                 search.Focus();
                 foreach(char c in "Lập trình")
                 {

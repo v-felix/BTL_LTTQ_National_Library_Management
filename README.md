@@ -54,7 +54,7 @@ cd BTL_LTTQ_National_Library_Management
 
    Script tạo **CSDL trống gồm 13 bảng**, khóa và ràng buộc từ `Database/Schema.sql`. Script từ chối ghi đè nếu đã có `DuLieu.mdf` hoặc `DuLieu_log.ldf`. Nhập danh mục, sách, thủ thư và thẻ mượn trên giao diện trước khi lập hồ sơ mượn.
 
-2. Mở `QuanLyThuVienQuocGia.csproj` hoặc solution `QuanLyThuVienQuocGia.slnx` bằng Visual Studio.
+2. Mở `QuanLyThuVienQuocGia.sln` hoặc `QuanLyThuVienQuocGia.csproj` bằng Visual Studio. Tệp `.sln` dùng được cả khi phiên bản Visual Studio chưa hỗ trợ `.slnx`.
 3. Restore NuGet Packages để tải lại thư mục `packages`. Có thể dùng **Developer PowerShell for Visual Studio**:
 
    ```powershell
@@ -107,9 +107,16 @@ Nếu không truyền `-MSBuildPath`, script dùng đường dẫn Visual Studio
 - `frmCirculation.cs [Design]`: giao diện mượn sách; đổi thuộc tính `ReturnMode` trong nhóm **Library** thành `True` để xem trước giao diện trả sách. Các nút và cột đều là điều khiển Designer.
 - `frmReports.cs [Design]`: bộ lọc, các nút xem/xuất/in và hai tab chi tiết, tổng hợp.
 
-`CatalogFormBase.cs` dùng chung phần xử lý tìm kiếm, thêm, lưu và xóa. Hai Form danh mục sở hữu điều khiển riêng để bảng bố cục không bị khóa do kế thừa. Mở Designer không yêu cầu kết nối CSDL; dữ liệu chỉ được nạp khi mở màn hình lúc chạy. Có thể chạy `Tests/RunDesignerTests.ps1` để kiểm tra các Form và lỗi con trỏ tìm kiếm mà không cần SQL Server.
+Các Form chính kế thừa trực tiếp `System.Windows.Forms.Form`; bố cục, nút và ô nhập nằm trong `.Designer.cs`. `CatalogController.cs` dùng chung phần xử lý tìm kiếm, thêm, lưu và xóa bằng cách nhận Form hiện tại. Designer không cần nạp một lớp Form cơ sở từ file EXE đã build và không cần kết nối CSDL.
 
-Nếu Visual Studio đang mở Designer trước khi cập nhật mã nguồn, đóng tab Designer cũ rồi mở lại sau khi build để nạp bố cục mới.
+Khi mở trên máy khác:
+
+1. Giải nén đầy đủ dự án và mở **`QuanLyThuVienQuocGia.sln`**, không mở riêng một file `.cs`.
+2. Cài workload **.NET desktop development** và **.NET Framework 4.7.2 Developer Pack** trong Visual Studio Installer.
+3. Trong **Solution Explorer**, chọn `frmDMSach.cs`, `frmMain.cs`, `frmCatalog.cs`, `frmCirculation.cs` hoặc `frmReports.cs`, nhấn **Shift+F7** / **View Designer**. Không chọn file `.Designer.cs` để mở màn hình kéo thả.
+4. Nếu Designer đang mở từ bản cũ, đóng tab đó rồi mở lại. Để build và chạy toàn bộ ứng dụng, restore NuGet và cài các thư viện trong phần **Yêu cầu môi trường**; riêng Designer của `frmBaoCaoSach` cần thành phần Crystal Reports.
+
+Chạy `Tests/RunDesignerTests.ps1` để kiểm tra. Bài kiểm tra đầu tiên biên dịch riêng các bố cục bằng thư viện .NET Framework, không dùng EXE cũ, SQL Server, Excel hay Crystal Reports; sau đó kiểm tra toàn bộ Form và lỗi con trỏ tìm kiếm.
 
 | Thành phần | Vai trò |
 | --- | --- |

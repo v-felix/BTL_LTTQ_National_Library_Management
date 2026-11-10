@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -10,7 +10,13 @@ class CatalogSaveTests
 {
     static Assembly app;
     static readonly BindingFlags Flags=BindingFlags.NonPublic|BindingFlags.Instance;
-    static object Field(object target,string name){return target.GetType().GetField(name,Flags).GetValue(target);}
+    static object Field(object target,string name)
+    {
+        var field=target.GetType().GetField(name,Flags);
+        if(field!=null)return field.GetValue(target);
+        var controller=target.GetType().GetField("controller",Flags).GetValue(target);
+        return controller.GetType().GetField(name,Flags).GetValue(controller);
+    }
     static void Call(object target,string method){target.GetType().GetMethod(method,Flags).Invoke(target,null);Application.DoEvents();}
     static void Check(bool ok,string message){if(!ok)throw new Exception(message);Console.WriteLine("PASS: "+message);}
     static decimal Count(string cs,string sql){using(var c=new SqlConnection(cs)){c.Open();using(var cmd=new SqlCommand(sql,c))return Convert.ToDecimal(cmd.ExecuteScalar());}}
