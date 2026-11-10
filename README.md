@@ -1,5 +1,22 @@
 # Quản lý Thư viện Quốc gia
 
+## Thông tin nhóm thực hiện
+
+- **Trường:** Đại học Giao thông Vận tải.
+- **Khoa:** Đào tạo Quốc tế.
+- **Lớp:** Công nghệ thông tin Việt – Anh 2.
+- **Khóa:** K65.
+
+| STT | Họ và tên sinh viên | Mã sinh viên |
+| --- | --- | --- |
+| 1 | Nguyễn Viết Khanh | 242630950 |
+| 2 | Nguyễn Đức Mạnh | 242630961 |
+| 3 | Nguyễn Minh | 242630962 |
+| 4 | Hoàng Thị Hải Vân | 242630987 |
+| 5 | Phan Huy Vĩnh | 242630989 |
+
+## Giới thiệu
+
 Bài tập lớn Lập trình trực quan, xây dựng bằng **C# Windows Forms, .NET Framework 4.7.2, SQL Server LocalDB**. Chức năng thực hiện theo [đề tài 18](<Docs/18_Quan ly thu vien QG (1).xls>).
 
 ## Chức năng
