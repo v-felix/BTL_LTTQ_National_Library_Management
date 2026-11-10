@@ -1,4 +1,5 @@
-// UI regression test: compile with frmCatalog.cs only. The in-memory catalog
+// UI regression test: compile with CatalogFormBase.cs, frmCatalog.cs and its Designer.
+// The in-memory catalog
 // replaces SQL so typing/focus can be tested even when LocalDB is unavailable.
 using System;
 using System.Collections.Generic;

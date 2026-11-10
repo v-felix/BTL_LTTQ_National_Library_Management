@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,57 +12,19 @@ namespace QuanLyThuVienQuocGia
 {
     public partial class frmMain : Form
     {
-        private Label lblTieuDe;
-        private Label lblPhuDe;
-        private Timer tmrDongHo;
 
         public frmMain()
         {
             InitializeComponent();
             UiTheme.Apply(this);
-            TaoTieuDe();
+            // Keep the same title layout as the drag-and-drop Designer.
+            lblTieuDe.AutoSize=false;lblTieuDe.Font=UiTheme.F(30F,FontStyle.Bold);lblTieuDe.Height=60;
+            lblPhuDe.AutoSize=false;lblPhuDe.Font=UiTheme.F(14F);lblPhuDe.Height=36;
             GanChucNang();
 
-            // Đồng hồ ở thanh trạng thái
-            tmrDongHo = new Timer { Interval = 1000 };
             tmrDongHo.Tick += delegate { CapNhatThoiGian(); };
-            tmrDongHo.Start();
+            if(LicenseManager.UsageMode!=LicenseUsageMode.Designtime && !DesignMode)tmrDongHo.Start();
             CapNhatThoiGian();
-        }
-
-        private void TaoTieuDe()
-        {
-            lblTieuDe = new Label
-            {
-                Text = "QUẢN LÝ THƯ VIỆN QUỐC GIA",
-                AutoSize = true,
-                BackColor = Color.Transparent,
-                ForeColor = Color.FromArgb(0, 70, 140),
-                Font = UiTheme.F(30F, FontStyle.Bold)
-            };
-            lblPhuDe = new Label
-            {
-                Text = "Hệ thống quản lý sách, bạn đọc và mượn trả",
-                AutoSize = true,
-                BackColor = Color.Transparent,
-                ForeColor = UiTheme.Navy,
-                Font = UiTheme.F(14F)
-            };
-            Controls.Add(lblTieuDe);
-            Controls.Add(lblPhuDe);
-            lblTieuDe.BringToFront();
-            lblPhuDe.BringToFront();
-            Resize += delegate { CanGiuaTieuDe(); };
-            Load += delegate { CanGiuaTieuDe(); };
-            CanGiuaTieuDe();
-        }
-
-        private void CanGiuaTieuDe()
-        {
-            lblTieuDe.Left = (ClientSize.Width - lblTieuDe.Width) / 2;
-            lblTieuDe.Top = menuStripMain.Height + 40;
-            lblPhuDe.Left = (ClientSize.Width - lblPhuDe.Width) / 2;
-            lblPhuDe.Top = lblTieuDe.Bottom + 6;
         }
 
         private void CapNhatThoiGian()
@@ -84,9 +46,7 @@ namespace QuanLyThuVienQuocGia
             mnuTheMuon.Click += delegate { MoDanhMuc("the"); };
             mnuViPham.Click += delegate { MoDanhMuc("vipham"); };
             mnuViPham.Text = "Danh mục vi phạm / tiền phạt";
-            var thuThu = new ToolStripMenuItem("Quản lý thủ thư");
-            thuThu.Click += delegate { MoDanhMuc("thuthu"); };
-            qUẢNLÝDANHMỤCToolStripMenuItem.DropDownItems.Add(thuThu);
+            mnuThuThu.Click += delegate { MoDanhMuc("thuthu"); };
             mnuLapPhieuMuon.Click += delegate { LibraryUi.Run(() => { using(var f = new frmCirculation(false)) f.ShowDialog(this); }); };
             mnuLapPhieuTra.Click += delegate { LibraryUi.Run(() => { using(var f = new frmCirculation(true)) f.ShowDialog(this); }); };
             mnuChiTietMuon.Click += delegate { MoBaoCao("loans"); };
@@ -96,9 +56,7 @@ namespace QuanLyThuVienQuocGia
             mnuThongKeTra.Click += delegate { MoBaoCao("returns"); };
             mnuThongKeChuaTra.Click += delegate { MoBaoCao("outstanding"); };
             mnuThongKeViPham.Click += delegate { MoBaoCao("violations"); };
-            var doanhThu = new ToolStripMenuItem("Tiền thu theo tháng / quý / năm");
-            doanhThu.Click += delegate { MoBaoCao("revenue"); };
-            mnuBaoCao.DropDownItems.Add(doanhThu);
+            mnuTienThu.Click += delegate { MoBaoCao("revenue"); };
             lblTrangThai.Text = "Sẵn sàng • Dữ liệu thư viện dùng chung Debug / Release";
 
             mnuHuongDan.Click += delegate
@@ -120,7 +78,7 @@ namespace QuanLyThuVienQuocGia
         }
 
         private void MoDanhMuc(string key)
-        { LibraryUi.Run(() => { using(var f = new frmCatalog(key)) f.ShowDialog(this); }); }
+        { LibraryUi.Run(() => { using(Form f = key=="sach" ? (Form)new frmDMSach() : new frmCatalog(key)) f.ShowDialog(this); }); }
         private void MoBaoCao(string key)
         { LibraryUi.Run(() => { using(var f = new frmReports(key)) f.ShowDialog(this); }); }
 

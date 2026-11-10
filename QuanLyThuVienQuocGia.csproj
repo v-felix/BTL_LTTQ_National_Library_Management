@@ -148,6 +148,9 @@
     <EmbeddedResource Include="frmBaoCaoSach.resx">
       <DependentUpon>frmBaoCaoSach.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmCatalog.resx">
+      <DependentUpon>frmCatalog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmCirculation.resx">
       <DependentUpon>frmCirculation.cs</DependentUpon>
     </EmbeddedResource>
@@ -231,15 +234,27 @@
     <Compile Include="ExcelExport.cs" />
     <Compile Include="LocalDbStartup.cs" />
     <Compile Include="Catalog.cs" />
+    <Compile Include="CatalogFormBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="LibraryUi.cs" />
     <Compile Include="frmCatalog.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="frmCatalog.Designer.cs">
+      <DependentUpon>frmCatalog.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmCirculation.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="frmCirculation.Designer.cs">
+      <DependentUpon>frmCirculation.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmReports.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmReports.Designer.cs">
+      <DependentUpon>frmReports.cs</DependentUpon>
     </Compile>
     <Compile Include="DatabaseMaintenance.cs" />
     <EmbeddedResource Include="LibraryUpgrade.sql">

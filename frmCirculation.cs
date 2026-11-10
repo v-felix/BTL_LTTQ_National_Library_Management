@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -7,52 +7,65 @@ using System.Windows.Forms;
 
 namespace QuanLyThuVienQuocGia
 {
-    internal sealed class frmCirculation : Form
+    public partial class frmCirculation : Form
     {
-        readonly bool returning;
-        readonly DataGridView grid=LibraryUi.Grid();
-        readonly FlowLayoutPanel header=LibraryUi.Bar();
-        readonly ComboBox cardOrLoan=new ComboBox(),librarian=new ComboBox();
-        readonly DateTimePicker date=new DateTimePicker{Format=DateTimePickerFormat.Custom,CustomFormat="dd/MM/yyyy",Width=130,Margin=new Padding(4,7,4,4),MaxDate=DateTime.Today};
-        readonly NumericUpDown deposit=new NumericUpDown{Maximum=999999999999m,DecimalPlaces=2,ThousandsSeparator=true,Width=145,Margin=new Padding(4,7,4,4)};
-        readonly Label summary=new Label{Dock=DockStyle.Bottom,Height=76,Padding=new Padding(12),ForeColor=UiTheme.Navy};
-        readonly TextBox search=new TextBox{Width=250,Margin=new Padding(4,7,4,4)};
-        bool loading;
-        public frmCirculation(bool isReturn)
+        bool returning,loading;
+        public frmCirculation()
         {
-            returning=isReturn;LibraryUi.Setup(this,returning?"Trả sách và thanh toán":"Lập hồ sơ mượn sách",1250,740);
-            ConfigureCombo(cardOrLoan,310);ConfigureCombo(librarian,245);
-            header.Controls.Add(LibraryUi.Label(returning?"Hồ sơ mượn":"Thẻ mượn"));header.Controls.Add(cardOrLoan);header.Controls.Add(LibraryUi.Label("Thủ thư"));header.Controls.Add(librarian);header.Controls.Add(LibraryUi.Label(returning?"Ngày trả":"Ngày mượn"));header.Controls.Add(date);
-            var actions=LibraryUi.Bar();
-            if(!returning){actions.Controls.Add(LibraryUi.Label("Tạm ứng"));actions.Controls.Add(deposit);actions.Controls.Add(LibraryUi.Label("Tìm sách"));actions.Controls.Add(search);}
-            actions.Controls.Add(LibraryUi.Button("Tải lại",Reload));actions.Controls.Add(LibraryUi.Button(returning?"Lưu phiếu trả":"Lưu phiếu mượn",Save));actions.Controls.Add(LibraryUi.Button("Xem hồ sơ",()=>new frmReports("loans").ShowDialog(this)));
-            var note=new Label{Dock=DockStyle.Top,AutoSize=true,Padding=new Padding(12),Text=returning?"Chỉ hiển thị sách chưa trả của hồ sơ. Tiền thuê = số ngày × đơn giá lúc mượn + phạt. Tạm ứng được trừ một lần ở lần trả cuối; số âm là hoàn lại.":"Đánh dấu các sách cần mượn (tối đa 3 cuốn đang mượn/thẻ). Thẻ phải còn hạn và sách phải còn trong kho."};
-            grid.ReadOnly=false;grid.AutoGenerateColumns=false;
-            grid.Columns.Add(new DataGridViewCheckBoxColumn{Name="Choose",HeaderText="Chọn",Width=65,ValueType=typeof(bool),TrueValue=true,FalseValue=false,
-                DefaultCellStyle=new DataGridViewCellStyle{NullValue=false,DataSourceNullValue=false,Alignment=DataGridViewContentAlignment.MiddleCenter,Padding=new Padding(0)}});
-            Add("MaSach","Mã sách");Add("TenSach","Tên sách");
-            if(returning)Add("NgayMuon","Ngày mượn");else{Add("TenTheLoai","Thể loại");Add("TenNXB","Nhà xuất bản");Add("SoLuong","Còn trong kho");}
-            Add("DonGiaThue","Đơn giá/ngày");
-            if(returning)
-            {
-                var vp=Catalog.Lookup("vipham");var none=vp.NewRow();none["Id"]=DBNull.Value;none["Name"]="Không vi phạm";vp.Rows.InsertAt(none,0);
-                grid.Columns.Add(new DataGridViewComboBoxColumn{Name="Violation",HeaderText="Vi phạm",DataSource=vp,DisplayMember="Name",ValueMember="Id",MinimumWidth=210,DefaultCellStyle=new DataGridViewCellStyle{NullValue="Không vi phạm"}});
-                grid.Columns.Add(new DataGridViewTextBoxColumn{Name="Amount",HeaderText="Thành tiền",ReadOnly=true,DefaultCellStyle=new DataGridViewCellStyle{Format="N0"}});
-            }
-            Controls.Add(grid);Controls.Add(summary);Controls.Add(note);Controls.Add(actions);Controls.Add(header);
+            InitializeComponent();
+            date.MaxDate=DateTime.Today;date.Value=DateTime.Today;
+            ApplyMode();
             grid.CurrentCellDirtyStateChanged+=(s,e)=>{if(grid.IsCurrentCellDirty)grid.CommitEdit(DataGridViewDataErrorContexts.Commit);};
             grid.CellValueChanged+=(s,e)=>{if(!loading && e.ColumnIndex>=0 && (grid.Columns[e.ColumnIndex].Name=="Choose" || grid.Columns[e.ColumnIndex].Name=="Violation"))LibraryUi.Run(UpdateSummary);};
             grid.DataError+=(s,e)=>{e.ThrowException=false;};
             cardOrLoan.SelectedIndexChanged+=(s,e)=>{if(!loading)LibraryUi.Run(()=>{if(returning)LoadBooks();UpdateSummary();});};
-            date.ValueChanged+=(s,e)=>{if(!loading)LibraryUi.Run(UpdateSummary);};deposit.ValueChanged+=(s,e)=>{if(!loading)LibraryUi.Run(UpdateSummary);};
-            search.TextChanged+=(s,e)=>LibraryUi.Run(LoadBooks);
-            Shown+=(s,e)=>LibraryUi.Run(Reload);
+            date.ValueChanged+=(s,e)=>{if(!loading)LibraryUi.Run(UpdateSummary);};
+            deposit.ValueChanged+=(s,e)=>{if(!loading)LibraryUi.Run(UpdateSummary);};
+            search.TextChanged+=(s,e)=>{if(!loading)LibraryUi.Run(LoadBooks);};
         }
-        void ConfigureCombo(ComboBox cb,int width){cb.Width=width;cb.DropDownWidth=500;cb.DropDownStyle=ComboBoxStyle.DropDownList;cb.DisplayMember="Name";cb.ValueMember="Id";cb.Margin=new Padding(4,7,4,4);}
-        void Add(string name,string title){grid.Columns.Add(new DataGridViewTextBoxColumn{Name=name,DataPropertyName=name,HeaderText=title,ReadOnly=true});}
+        public frmCirculation(bool isReturn) : this() { ReturnMode=isReturn; }
+
+        [System.ComponentModel.Category("Library")]
+        [System.ComponentModel.DefaultValue(false)]
+        [System.ComponentModel.Description("Hiển thị giao diện trả sách và thanh toán thay cho giao diện mượn sách.")]
+        public bool ReturnMode
+        {
+            get{return returning;}
+            set{returning=value;if(grid!=null)ApplyMode();}
+        }
+        void ApplyMode()
+        {
+            Text=returning?"Trả sách và thanh toán":"Lập hồ sơ mượn sách";
+            lblOwner.Text=returning?"Hồ sơ mượn":"Thẻ mượn";
+            lblDate.Text=returning?"Ngày trả":"Ngày mượn";
+            btnSave.Text=returning?"Lưu phiếu trả":"Lưu phiếu mượn";
+            lblDeposit.Visible=deposit.Visible=lblSearch.Visible=search.Visible=!returning;
+            gridTenTheLoaiColumn.Visible=gridTenNXBColumn.Visible=gridSoLuongColumn.Visible=!returning;
+            gridNgayMuonColumn.Visible=gridViolationColumn.Visible=gridAmountColumn.Visible=returning;
+            note.Text=returning?"Chỉ hiển thị sách chưa trả của hồ sơ. Tiền thuê = số ngày × đơn giá lúc mượn + phạt. Tạm ứng được trừ một lần ở lần trả cuối; số âm là hoàn lại.":"Đánh dấu các sách cần mượn (tối đa 3 cuốn đang mượn/thẻ). Thẻ phải còn hạn và sách phải còn trong kho.";
+            summary.Text=returning?"Chọn hồ sơ còn sách chưa trả.":"Đã chọn 0 cuốn • Tạm ứng: 0 đ";
+        }
+        void Circulation_Shown(object sender,EventArgs e)
+        { if(System.ComponentModel.LicenseManager.UsageMode!=System.ComponentModel.LicenseUsageMode.Designtime && !DesignMode)LibraryUi.Run(Reload); }
+        void Reload_Click(object sender,EventArgs e){LibraryUi.Run(Reload);}
+        void Save_Click(object sender,EventArgs e){LibraryUi.Run(Save);}
+        void History_Click(object sender,EventArgs e){LibraryUi.Run(()=>{using(var f=new frmReports("loans"))f.ShowDialog(this);});}
         void Reload()
         {
+            grid.AutoGenerateColumns=false;
+            // Keep component names stable while VS deserializes the Designer.
+            // Logical column names are only needed when binding runtime data.
+            gridMaSachColumn.DataPropertyName="MaSach";
+            gridTenSachColumn.DataPropertyName="TenSach";
+            gridTenTheLoaiColumn.DataPropertyName="TenTheLoai";
+            gridTenNXBColumn.DataPropertyName="TenNXB";
+            gridSoLuongColumn.DataPropertyName="SoLuong";
+            gridNgayMuonColumn.DataPropertyName="NgayMuon";
+            gridDonGiaThueColumn.DataPropertyName="DonGiaThue";
+            foreach(DataGridViewColumn column in grid.Columns)
+                column.Name=column==gridChooseColumn?"Choose":column==gridViolationColumn?"Violation":column==gridAmountColumn?"Amount":column.DataPropertyName;
             loading=true;try{
+                if(returning){var vp=Catalog.Lookup("vipham");var none=vp.NewRow();none["Id"]=DBNull.Value;none["Name"]="Không vi phạm";vp.Rows.InsertAt(none,0);((DataGridViewComboBoxColumn)grid.Columns["Violation"]).DataSource=vp;}
                 librarian.DataSource=Catalog.Lookup("thuthu");librarian.SelectedIndex=-1;
                 cardOrLoan.DataSource=returning?LibraryDb.Query(@"SELECT h.MaHSM Id,CONVERT(nvarchar(20),h.MaHSM)+N' — '+c.HoTen+N' — '+CONVERT(nvarchar(10),h.NgayMuon,103) Name
                     FROM tblHoSoMuon h JOIN tblTheMuon c ON c.MaThe=h.MaThe WHERE EXISTS(SELECT 1 FROM tblChiTietHSMuon d WHERE d.MaHSM=h.MaHSM AND d.ChuaTra=1) ORDER BY h.MaHSM DESC"):Catalog.Lookup("the");
@@ -102,15 +115,8 @@ namespace QuanLyThuVienQuocGia
             summary.Text=invalid?"Cần kiểm tra ngày trả, đơn giá hoặc tiền phạt trước khi lưu.":string.Format("Đã chọn {0}/{1} sách chưa trả • Tổng tiền: {2:N0} đ • Trừ tạm ứng: {3:N0} đ\n{4}: {5:N0} đ",chosen.Length,grid.Rows.Count,total,advance,total-advance<0?"Hoàn lại bạn đọc":"Phải thu thêm",Math.Abs(total-advance));
         }
 
-        private void InitializeComponent()
+        private void grid_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            this.SuspendLayout();
-            // 
-            // frmCirculation
-            // 
-            this.ClientSize = new System.Drawing.Size(536, 405);
-            this.Name = "frmCirculation";
-            this.ResumeLayout(false);
 
         }
 

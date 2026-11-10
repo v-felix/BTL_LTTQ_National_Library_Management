@@ -18,6 +18,7 @@ $created = $false
 try {
     & $MSBuildPath (Join-Path $projectRoot 'QuanLyThuVienQuocGia.csproj') /t:Build /p:Configuration=Debug /v:minimal /nologo
     if ($LASTEXITCODE -ne 0) { throw 'Build failed.' }
+    & (Join-Path $PSScriptRoot 'RunDesignerTests.ps1') -MSBuildPath $MSBuildPath -SkipBuild
     $safeDb = $dbFile.Replace(']',']]')
     $safeBackup = $backup.Replace("'","''")
     Sql "BACKUP DATABASE [$safeDb] TO DISK=N'$safeBackup' WITH COPY_ONLY,INIT;"
@@ -30,6 +31,11 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Integration test compilation failed.' }
     & $integrationExe | Tee-Object -FilePath (Join-Path $work 'IntegrationResults.txt')
     if ($LASTEXITCODE -ne 0) { throw 'Integration tests failed.' }
+    $catalogExe = Join-Path $work 'CatalogSaveTests.exe'
+    & $compiler /nologo /target:exe "/out:$catalogExe" /r:System.Data.dll /r:System.Core.dll /r:System.Windows.Forms.dll (Join-Path $PSScriptRoot 'CatalogSaveTests.cs')
+    if ($LASTEXITCODE -ne 0) { throw 'Catalog save test compilation failed.' }
+    & $catalogExe (Join-Path $projectRoot 'bin\Debug\QuanLyThuVienQuocGia.exe') | Tee-Object -FilePath (Join-Path $work 'CatalogSaveResults.txt')
+    if ($LASTEXITCODE -ne 0) { throw 'Catalog save tests failed.' }
     $smokeExe = Join-Path $work 'UiSmokeTests.exe'
     & $compiler /nologo /target:exe "/out:$smokeExe" /r:System.Data.dll /r:System.Windows.Forms.dll /r:System.Core.dll /r:System.IO.Compression.dll /r:System.IO.Compression.FileSystem.dll /r:System.Xml.dll (Join-Path $PSScriptRoot 'UiSmokeTests.cs')
     if ($LASTEXITCODE -ne 0) { throw 'UI test compilation failed.' }

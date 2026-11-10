@@ -82,6 +82,18 @@ Nếu không truyền `-MSBuildPath`, script dùng đường dẫn Visual Studio
 
 ## Mã nguồn
 
+### Chỉnh giao diện bằng Windows Forms Designer
+
+- `frmMain.cs [Design]`: trang chủ, tiêu đề, thanh menu và thanh trạng thái.
+- `frmDMSach.cs [Design]`: giao diện quản lý sách được mở từ menu; có đầy đủ ô nhập, nút thao tác và tiêu đề cột, chỉnh trực tiếp bằng Designer.
+- `frmCatalog.cs [Design]`: bố cục danh mục dùng chung, mặc định xem trước danh mục sách. Các danh mục khác dùng cùng thanh nút và sinh trường theo cấu hình `Catalog.Specs`.
+- `frmCirculation.cs [Design]`: giao diện mượn sách; đổi thuộc tính `ReturnMode` trong nhóm **Library** thành `True` để xem trước giao diện trả sách. Các nút và cột đều là điều khiển Designer.
+- `frmReports.cs [Design]`: bộ lọc, các nút xem/xuất/in và hai tab chi tiết, tổng hợp.
+
+`CatalogFormBase.cs` dùng chung phần xử lý tìm kiếm, thêm, lưu và xóa. Hai Form danh mục sở hữu điều khiển riêng để bảng bố cục không bị khóa do kế thừa. Mở Designer không yêu cầu kết nối CSDL; dữ liệu chỉ được nạp khi mở màn hình lúc chạy. Có thể chạy `Tests/RunDesignerTests.ps1` để kiểm tra các Form và lỗi con trỏ tìm kiếm mà không cần SQL Server.
+
+Nếu Visual Studio đang mở Designer trước khi cập nhật mã nguồn, đóng tab Designer cũ rồi mở lại sau khi build để nạp bố cục mới.
+
 | Thành phần | Vai trò |
 | --- | --- |
 | `LibraryDb.cs` | Truy vấn có tham số, giao dịch mượn/trả và cập nhật tồn |

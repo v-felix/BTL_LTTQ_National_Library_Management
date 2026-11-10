@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -7,38 +7,50 @@ using System.Windows.Forms;
 
 namespace QuanLyThuVienQuocGia
 {
-    internal sealed class frmReports : Form
+    public partial class frmReports : Form
     {
-        readonly ComboBox mode=new ComboBox{DropDownStyle=ComboBoxStyle.DropDownList,Width=310,Margin=new Padding(4,7,4,4)};
-        readonly ComboBox card,librarian;
-        readonly DateTimePicker from=new DateTimePicker{Format=DateTimePickerFormat.Custom,CustomFormat="dd/MM/yyyy",Width=125,Value=new DateTime(DateTime.Today.Year,1,1),Margin=new Padding(4,7,4,4)};
-        readonly DateTimePicker to=new DateTimePicker{Format=DateTimePickerFormat.Custom,CustomFormat="dd/MM/yyyy",Width=125,Margin=new Padding(4,7,4,4)};
-        readonly CheckBox filterDate=new CheckBox{Text="Lọc ngày",AutoSize=true,Margin=new Padding(4,10,4,4)};
-        readonly DataGridView detail=LibraryUi.Grid(),totals=LibraryUi.Grid();
-        readonly Label status=new Label{Dock=DockStyle.Bottom,Height=56,Padding=new Padding(10),ForeColor=UiTheme.Navy};
-        readonly TabControl tabs=new TabControl{Dock=DockStyle.Fill};
+        bool filtersLoaded,configuring;
+        int? initialCard,initialStaff;
         readonly string[] keys={"revenue","outstanding","loans","returns","violations"};
         readonly Dictionary<string,string> captions=new Dictionary<string,string>{
             {"MaHSM","Mã HS mượn"},{"MaHSTra","Mã HS trả"},{"MaThe","Mã thẻ"},{"HoTen","Bạn đọc"},{"TenThuThu","Thủ thư"},{"NgayMuon","Ngày mượn"},{"NgayTra","Ngày trả"},
             {"MaSach","Mã sách"},{"TenSach","Tên sách"},{"DonGiaThue","Đơn giá/ngày"},{"SoNgayThue","Số ngày thuê"},{"TienPhat","Tiền phạt"},{"ThanhTien","Thành tiền"},
             {"TamUng","Tạm ứng"},{"TamUngApDung","Tạm ứng đã trừ"},{"SoTienThanhToan","Thu thêm / hoàn (-)"},{"TongTien","Tổng tiền thuê và phạt"},{"SoSach","Số sách"},{"ChuaTra","Chưa trả"},
             {"SoChuaTra","Số sách chưa trả"},{"TenViPham","Vi phạm"},{"Thang","Tháng"},{"Quy","Quý"},{"Nam","Năm"},{"ThucThu","Thu thêm / hoàn (-)"},{"SoPhieuTra","Số phiếu trả"}};
-        public frmReports(string initial="revenue",int? cardId=null,int? staffId=null)
+        public frmReports() : this("revenue",null,null) { }
+        public frmReports(string initial,int? cardId=null,int? staffId=null)
         {
-            LibraryUi.Setup(this,"Tra cứu và báo cáo thư viện",1280,780);
-            card=LibraryUi.Combo(Catalog.Lookup("the"),true);librarian=LibraryUi.Combo(Catalog.Lookup("thuthu"),true);
-            mode.Items.AddRange(new object[]{"Tiền thu theo tháng, quý, năm","Sách đang mượn chưa trả","Hồ sơ mượn theo thẻ / thủ thư","Danh sách hồ sơ trả","Sách vi phạm khi trả"});mode.SelectedIndex=Math.Max(0,Array.IndexOf(keys,initial));
-            var top=LibraryUi.Bar();top.Controls.Add(LibraryUi.Label("Báo cáo"));top.Controls.Add(mode);top.Controls.Add(LibraryUi.Label("Thẻ"));top.Controls.Add(card);top.Controls.Add(LibraryUi.Label("Thủ thư"));top.Controls.Add(librarian);
-            var bar=LibraryUi.Bar();bar.Controls.Add(filterDate);bar.Controls.Add(from);bar.Controls.Add(LibraryUi.Label("đến"));bar.Controls.Add(to);
-            bar.Controls.Add(LibraryUi.Button("Tháng này",()=>SetPeriod(0)));bar.Controls.Add(LibraryUi.Button("Quý này",()=>SetPeriod(1)));bar.Controls.Add(LibraryUi.Button("Năm nay",()=>SetPeriod(2)));
-            bar.Controls.Add(LibraryUi.Button("Xem báo cáo",LoadReport));bar.Controls.Add(LibraryUi.Button("Xuất Excel",()=>LibraryUi.Export(CurrentGrid(),mode.Text)));bar.Controls.Add(LibraryUi.Button("In / PDF",()=>LibraryUi.Print(CurrentGrid(),mode.Text,status.Text)));
-            var t1=new TabPage("Chi tiết");t1.Controls.Add(detail);var t2=new TabPage("Tổng hợp tháng / quý / năm");t2.Controls.Add(totals);tabs.TabPages.Add(t1);tabs.TabPages.Add(t2);
-            Controls.Add(tabs);Controls.Add(status);Controls.Add(bar);Controls.Add(top);
-            filterDate.Checked=initial=="revenue";if(cardId.HasValue)card.SelectedValue=cardId.Value;if(staffId.HasValue)librarian.SelectedValue=staffId.Value;
-            mode.SelectedIndexChanged+=(s,e)=>LibraryUi.Run(LoadReport);
+            InitializeComponent();
+            from.Value=new DateTime(DateTime.Today.Year,1,1);to.Value=DateTime.Today;
+            mode.SelectedIndex=Math.Max(0,Array.IndexOf(keys,initial));
+            filterDate.Checked=initial=="revenue";initialCard=cardId;initialStaff=staffId;
+            mode.SelectedIndexChanged+=(s,e)=>{if(!configuring)LibraryUi.Run(LoadReport);};
             detail.CellDoubleClick+=(s,e)=>{if(e.RowIndex>=0)LibraryUi.Run(ShowDetails);};
-            Shown+=(s,e)=>LibraryUi.Run(LoadReport);
         }
+        void LoadFilters()
+        {
+            if(filtersLoaded)return;
+            configuring=true;
+            try
+            {
+                foreach(var pair in new[]{new{Key="the",Combo=card,Id=initialCard},new{Key="thuthu",Combo=librarian,Id=initialStaff}})
+                {
+                    var dt=Catalog.Lookup(pair.Key);var row=dt.NewRow();row["Id"]=DBNull.Value;row["Name"]="— Không chọn —";dt.Rows.InsertAt(row,0);
+                    pair.Combo.DataSource=dt;
+                    if(pair.Id.HasValue)pair.Combo.SelectedValue=pair.Id.Value;
+                }
+                filtersLoaded=true;
+            }
+            finally{configuring=false;}
+        }
+        void Reports_Shown(object sender,EventArgs e)
+        {if(System.ComponentModel.LicenseManager.UsageMode!=System.ComponentModel.LicenseUsageMode.Designtime && !DesignMode)LibraryUi.Run(LoadReport);}
+        void Month_Click(object sender,EventArgs e){LibraryUi.Run(()=>SetPeriod(0));}
+        void Quarter_Click(object sender,EventArgs e){LibraryUi.Run(()=>SetPeriod(1));}
+        void Year_Click(object sender,EventArgs e){LibraryUi.Run(()=>SetPeriod(2));}
+        void View_Click(object sender,EventArgs e){LibraryUi.Run(LoadReport);}
+        void Export_Click(object sender,EventArgs e){LibraryUi.Run(()=>LibraryUi.Export(CurrentGrid(),mode.Text));}
+        void Print_Click(object sender,EventArgs e){LibraryUi.Run(()=>LibraryUi.Print(CurrentGrid(),mode.Text,status.Text));}
         DataGridView CurrentGrid(){return tabs.SelectedIndex==1?totals:detail;}
         void SetPeriod(int kind)
         {
@@ -47,9 +59,10 @@ namespace QuanLyThuVienQuocGia
         }
         int? Id(ComboBox cb){return cb.SelectedValue==null || cb.SelectedValue==DBNull.Value || cb.SelectedValue is DataRowView?(int?)null:Convert.ToInt32(cb.SelectedValue);}
         void Bind(DataGridView g,DataTable dt)
-        {g.DataSource=dt;foreach(DataGridViewColumn c in g.Columns)if(captions.ContainsKey(c.Name))c.HeaderText=captions[c.Name];LibraryUi.Format(g);}
+        {if(g.DataSource==null)g.Columns.Clear();g.AutoGenerateColumns=true;g.DataSource=dt;foreach(DataGridViewColumn c in g.Columns)if(captions.ContainsKey(c.Name))c.HeaderText=captions[c.Name];LibraryUi.Format(g);}
         void LoadReport()
         {
+            LoadFilters();
             if(from.Value.Date>to.Value.Date)throw new InvalidOperationException("Ngày bắt đầu phải trước ngày kết thúc.");
             string key=keys[mode.SelectedIndex],sql;
             string dates=filterDate.Checked?" AND {0}>=@from AND {0}<@to ":"";

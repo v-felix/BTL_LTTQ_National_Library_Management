@@ -1,4 +1,4 @@
-namespace QuanLyThuVienQuocGia
+﻿namespace QuanLyThuVienQuocGia
 {
     partial class frmMain
     {
@@ -28,7 +28,14 @@ namespace QuanLyThuVienQuocGia
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmMain));
+            this.lblTieuDe = new System.Windows.Forms.Label();
+            this.lblPhuDe = new System.Windows.Forms.Label();
+            this.titlePanel = new System.Windows.Forms.Panel();
+            this.tmrDongHo = new System.Windows.Forms.Timer(this.components);
+            this.mnuThuThu = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuTienThu = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStripMain = new System.Windows.Forms.MenuStrip();
             this.mnuHeThong = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuDangNhap = new System.Windows.Forms.ToolStripMenuItem();
@@ -100,18 +107,21 @@ namespace QuanLyThuVienQuocGia
             // 
             this.mnuDangNhap.Name = "mnuDangNhap";
             this.mnuDangNhap.Size = new System.Drawing.Size(208, 26);
+            this.mnuDangNhap.Visible = false;
             this.mnuDangNhap.Text = "Đăng nhập";
             // 
             // mnuDoiMatKhau
             // 
             this.mnuDoiMatKhau.Name = "mnuDoiMatKhau";
             this.mnuDoiMatKhau.Size = new System.Drawing.Size(208, 26);
+            this.mnuDoiMatKhau.Visible = false;
             this.mnuDoiMatKhau.Text = "Đổi mật khẩu";
             // 
             // mnuQuanLyTaiKhoan
             // 
             this.mnuQuanLyTaiKhoan.Name = "mnuQuanLyTaiKhoan";
             this.mnuQuanLyTaiKhoan.Size = new System.Drawing.Size(208, 26);
+            this.mnuQuanLyTaiKhoan.Visible = false;
             this.mnuQuanLyTaiKhoan.Text = "Quản lý tài khoản";
             // 
             // mnuSaoLuu
@@ -134,7 +144,8 @@ namespace QuanLyThuVienQuocGia
             this.mnuNXB,
             this.mnuNgonNgu,
             this.mnuDanToc,
-            this.mnuQue});
+            this.mnuQue,
+            this.mnuThuThu});
             this.qUẢNLÝDANHMỤCToolStripMenuItem.Name = "qUẢNLÝDANHMỤCToolStripMenuItem";
             this.qUẢNLÝDANHMỤCToolStripMenuItem.Size = new System.Drawing.Size(102, 24);
             this.qUẢNLÝDANHMỤCToolStripMenuItem.Text = "DANH MỤC";
@@ -216,7 +227,7 @@ namespace QuanLyThuVienQuocGia
             // 
             this.mnuViPham.Name = "mnuViPham";
             this.mnuViPham.Size = new System.Drawing.Size(215, 26);
-            this.mnuViPham.Text = "Xử lý vi phạm";
+            this.mnuViPham.Text = "Danh mục vi phạm / tiền phạt";
             // 
             // mnuBaoCao
             // 
@@ -225,7 +236,8 @@ namespace QuanLyThuVienQuocGia
             this.mnuThongKeMuon,
             this.mnuThongKeTra,
             this.mnuThongKeChuaTra,
-            this.mnuThongKeViPham});
+            this.mnuThongKeViPham,
+            this.mnuTienThu});
             this.mnuBaoCao.Name = "mnuBaoCao";
             this.mnuBaoCao.Size = new System.Drawing.Size(87, 24);
             this.mnuBaoCao.Text = "BÁO CÁO";
@@ -241,13 +253,13 @@ namespace QuanLyThuVienQuocGia
             // 
             this.mnuThongKeMuon.Name = "mnuThongKeMuon";
             this.mnuThongKeMuon.Size = new System.Drawing.Size(244, 26);
-            this.mnuThongKeMuon.Text = "Thống kê mượn sách";
+            this.mnuThongKeMuon.Text = "Hồ sơ mượn theo thẻ / thủ thư";
             // 
             // mnuThongKeTra
             // 
             this.mnuThongKeTra.Name = "mnuThongKeTra";
             this.mnuThongKeTra.Size = new System.Drawing.Size(244, 26);
-            this.mnuThongKeTra.Text = "Thống kê trả sách";
+            this.mnuThongKeTra.Text = "Hồ sơ trả và thanh toán";
             // 
             // mnuThongKeChuaTra
             // 
@@ -319,12 +331,47 @@ namespace QuanLyThuVienQuocGia
             this.lblThoiGian.Size = new System.Drawing.Size(71, 20);
             this.lblThoiGian.Text = "Thời gian";
             // 
+            // Controls shared by the Designer and the running main window.
+            this.mnuThuThu.Name = "mnuThuThu";
+            this.mnuThuThu.Text = "Quản lý thủ thư";
+            this.mnuTienThu.Name = "mnuTienThu";
+            this.mnuTienThu.Text = "Tiền thu theo tháng / quý / năm";
+            this.tmrDongHo.Interval = 1000;
+            this.titlePanel.Name = "titlePanel";
+            this.titlePanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.titlePanel.Height = 166;
+            this.titlePanel.Padding = new System.Windows.Forms.Padding(0, 32, 0, 0);
+            this.titlePanel.BackColor = System.Drawing.Color.Transparent;
+            this.titlePanel.Controls.Add(this.lblPhuDe);
+            this.titlePanel.Controls.Add(this.lblTieuDe);
+            this.lblTieuDe.Name = "lblTieuDe";
+            this.lblTieuDe.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblTieuDe.Height = 60;
+            this.lblTieuDe.Text = "QUẢN LÝ THƯ VIỆN QUỐC GIA";
+            this.lblTieuDe.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblTieuDe.Font = new System.Drawing.Font("Segoe UI", 30F, System.Drawing.FontStyle.Bold);
+            this.lblTieuDe.BackColor = System.Drawing.Color.Transparent;
+            this.lblTieuDe.ForeColor = System.Drawing.Color.FromArgb(0, 70, 140);
+            this.lblPhuDe.Name = "lblPhuDe";
+            this.lblPhuDe.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lblPhuDe.Height = 36;
+            this.lblPhuDe.Text = "Hệ thống quản lý sách, bạn đọc và mượn trả";
+            this.lblPhuDe.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblPhuDe.Font = new System.Drawing.Font("Segoe UI", 14F);
+            this.lblPhuDe.BackColor = System.Drawing.Color.Transparent;
+            this.lblPhuDe.ForeColor = System.Drawing.Color.FromArgb(18, 32, 64);
+            this.menuStripMain.BackColor = System.Drawing.Color.FromArgb(0, 82, 155);
+            this.menuStripMain.ForeColor = System.Drawing.Color.White;
+            this.menuStripMain.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
             // frmMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
+            this.Font = new System.Drawing.Font("Segoe UI", 11F);
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1100, 680);
+            this.Controls.Add(this.titlePanel);
             this.Controls.Add(this.statusStripMain);
             this.Controls.Add(this.menuStripMain);
             this.MainMenuStrip = this.menuStripMain;
@@ -342,6 +389,12 @@ namespace QuanLyThuVienQuocGia
 
         #endregion
 
+        private System.Windows.Forms.Panel titlePanel;
+        private System.Windows.Forms.Label lblTieuDe;
+        private System.Windows.Forms.Label lblPhuDe;
+        private System.Windows.Forms.Timer tmrDongHo;
+        private System.Windows.Forms.ToolStripMenuItem mnuThuThu;
+        private System.Windows.Forms.ToolStripMenuItem mnuTienThu;
         private System.Windows.Forms.MenuStrip menuStripMain;
         private System.Windows.Forms.ToolStripMenuItem mnuHeThong;
         private System.Windows.Forms.ToolStripMenuItem mnuDangNhap;
